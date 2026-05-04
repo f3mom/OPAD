@@ -1,0 +1,28 @@
+services:
+  opad:
+    build: .
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./data:/app/data
+      - ./exploits:/app/exploits
+      - ./plugins:/app/plugins
+      - ./examples:/app/examples:ro
+    environment:
+      OPAD_DATA_DIR: /app/data
+      OPAD_SECRET_KEY: ${OPAD_SECRET_KEY:-change-this-in-production}
+      OPAD_ENABLE_DANGEROUS_APPLY: ${OPAD_ENABLE_DANGEROUS_APPLY:-false}
+      PYTHONPATH: /app/backend:/app/sdk
+    restart: unless-stopped
+
+  # Optional: use this profile when you want OPAD to own the pcap-broker container.
+  # docker compose --profile capture up --build
+  pcap-broker:
+    profiles: ["capture"]
+    image: ghcr.io/fox-it/pcap-broker:latest
+    network_mode: host
+    cap_add: ["NET_RAW", "NET_ADMIN"]
+    environment:
+      LISTEN_ADDRESS: 0.0.0.0:4242
+      PCAP_COMMAND: "tcpdump -i ${OPAD_GAME_INTERFACE:-game0} -n --immediate-mode -s 65535 -U -w - not port 22 and not port 1337 and not port 65000"
+    restart: unless-stopped

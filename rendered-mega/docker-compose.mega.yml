@@ -1,0 +1,130 @@
+version: '3.9'
+services:
+  opad:
+    build: .
+    ports:
+    - 1337:1337
+    environment:
+    - OPAD_DATA_DIR=/data
+    - OPAD_SECRET_KEY=${OPAD_SECRET_KEY:-change-me}
+    - PYTHONPATH=/app/backend:/app/sdk
+    volumes:
+    - opad-data:/data
+    - ./exploits:/app/exploits
+    - ./plugins:/app/plugins
+    - ./patches:/app/patches
+    depends_on:
+    - redis
+    - postgres
+  redis:
+    image: redis:7-alpine
+    volumes:
+    - redis-data:/data
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: opad
+      POSTGRES_USER: opad
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opad-dev-password}
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+  prometheus:
+    image: prom/prometheus:latest
+    profiles:
+    - observability
+    ports:
+    - 9090:9090
+    volumes:
+    - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  grafana:
+    image: grafana/grafana:latest
+    profiles:
+    - observability
+    ports:
+    - 3001:3000
+    volumes:
+    - grafana-data:/var/lib/grafana
+    - ./deploy/grafana/dashboards:/var/lib/grafana/dashboards:ro
+  loki:
+    image: grafana/loki:latest
+    profiles:
+    - observability
+    ports:
+    - 3100:3100
+    volumes:
+    - loki-data:/loki
+  pcap-broker:
+    image: ${PCAP_BROKER_IMAGE:-pcap-broker:local}
+    profiles:
+    - traffic
+    network_mode: host
+    command:
+    - --listen
+    - 127.0.0.1:4242
+    - --capture-command
+    - tcpdump -i ${OPAD_GAME_INTERFACE:-game0} -U -w - not port 22 and not port 1337
+  packmate:
+    image: ${PACKMATE_IMAGE:-packmate:local}
+    profiles:
+    - traffic
+    ports:
+    - 65000:65000
+    environment:
+    - PACKMATE_MODE=LIVE
+    - PACKMATE_INTERFACE=${OPAD_GAME_INTERFACE:-game0}
+  tulip:
+    image: ${TULIP_IMAGE:-tulip:local}
+    profiles:
+    - traffic
+    ports:
+    - 3002:3000
+    volumes:
+    - ./pcaps:/pcaps
+  pkappa2:
+    image: ${PKAPPA2_IMAGE:-pkappa2:local}
+    profiles:
+    - traffic
+    ports:
+    - 8082:8080
+    volumes:
+    - pkappa2-data:/data
+  shovel:
+    image: ${SHOVEL_IMAGE:-shovel:local}
+    profiles:
+    - traffic
+    ports:
+    - 8083:8000
+    volumes:
+    - ./suricata:/suricata
+  caronte:
+    image: ${CARONTE_IMAGE:-caronte:local}
+    profiles:
+    - traffic
+    ports:
+    - 3333:3333
+    volumes:
+    - caronte-data:/data
+    - ./pcaps:/pcaps
+  ctf-proxy:
+    image: ${CTF_PROXY_IMAGE:-ctf-proxy:local}
+    profiles:
+    - defense
+    network_mode: host
+    volumes:
+    - ./deploy/defense/ctf_proxy:/config
+  yampa:
+    image: ${YAMPA_IMAGE:-yampa:local}
+    profiles:
+    - defense
+    network_mode: host
+    volumes:
+    - ./deploy/defense/yampa:/app/plugins
+volumes:
+  opad-data: {}
+  redis-data: {}
+  postgres-data: {}
+  grafana-data: {}
+  loki-data: {}
+  pkappa2-data: {}
+  caronte-data: {}
+x-opad-note: Set *_IMAGE env vars to images you build/trust from upstream tools.

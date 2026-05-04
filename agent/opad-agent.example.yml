@@ -1,0 +1,6 @@
+token: change-me-agent-token
+allowed_commands:
+  docker_ps: "docker ps"
+  restart_shop: "docker compose -f /opt/services/docker-compose.yml restart shop"
+  build_shop: "docker compose -f /opt/services/docker-compose.yml build shop"
+  deploy_shop: "docker compose -f /opt/services/docker-compose.yml up -d shop"

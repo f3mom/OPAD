@@ -1,0 +1,9 @@
+[project]
+name = "opad"
+version = "1.0.0"
+description = "Open Platform for Attack-Defense CTF"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["backend", "sdk"]
+testpaths = ["tests"]

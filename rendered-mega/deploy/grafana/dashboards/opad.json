@@ -1,0 +1,86 @@
+{
+  "dashboard": {
+    "title": "OPAD A/D CTF Cockpit",
+    "schemaVersion": 39,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Current tick",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 4,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "opad_current_tick"
+          }
+        ]
+      },
+      {
+        "type": "stat",
+        "title": "Services up",
+        "gridPos": {
+          "x": 4,
+          "y": 0,
+          "w": 4,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "sum(opad_service_health_ok)"
+          }
+        ]
+      },
+      {
+        "type": "timeseries",
+        "title": "Accepted flags/min",
+        "gridPos": {
+          "x": 8,
+          "y": 0,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(opad_flags_accepted_total[1m])"
+          }
+        ]
+      },
+      {
+        "type": "timeseries",
+        "title": "Traffic findings",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(opad_traffic_findings_total[1m])"
+          }
+        ]
+      },
+      {
+        "type": "timeseries",
+        "title": "Exploit errors",
+        "gridPos": {
+          "x": 8,
+          "y": 8,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(opad_exploit_errors_total[1m])"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}
