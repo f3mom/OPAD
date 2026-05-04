@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>OPAD Mega Control Plane</h1>
+    <p>Everything-and-everything A/D cockpit: traffic intelligence, exploit farm planning, checker-aware patching, proxy filters, observability, CI/CD, IaC and playbooks.</p>
+  </div>
+  <div><span class="pill">authorized CTF/lab scope only</span></div>
+</section>
+<div class="grid two">
+  <section class="card">
+    <h2>Profiles</h2>
+    {% for key, profile in profiles.items() %}
+      <h3>{{ key }} — {{ profile.name }}</h3>
+      <p>{{ profile.description }}</p>
+    {% endfor %}
+  </section>
+  <section class="card">
+    <h2>Readiness</h2>
+    <table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>
+    {% for c in checks %}<tr><td>{{ c.key }}</td><td>{{ 'OK' if c.ok else 'WARN' }}</td><td>{{ c.detail }}</td></tr>{% endfor %}
+    </table>
+  </section>
+</div>
+<section class="card">
+  <h2>Capability map</h2>
+  {% for layer, caps in capabilities.items() %}
+    <h3>{{ layer }}</h3>
+    <table><tr><th>Capability</th><th>Description</th><th>Integrations</th></tr>
+    {% for cap in caps %}<tr><td>{{ cap.name }}</td><td>{{ cap.description }}</td><td>{{ cap.integrations|join(', ') }}</td></tr>{% endfor %}
+    </table>
+  {% endfor %}
+</section>
+<section class="card">
+  <h2>Useful Mega APIs</h2>
+  <pre>GET /api/mega/tool-matrix
+GET /api/mega/stack/docker-compose.yml?profile=mega
+GET /api/mega/farm/plan?workers=4
+GET /api/mega/checker/replay-plan
+GET /api/mega/playbooks/traffic_to_patch.md
+GET /api/mega/observability/bundle
+POST /api/mega/export/render-all</pre>
+</section>
+{% endblock %}

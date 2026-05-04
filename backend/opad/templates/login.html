@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"><div><h1>OPAD Login</h1><p>Role-based access control for the A/D cockpit.</p></div></section>
+<div class="grid two">
+  <section class="card">
+    <h2>Login</h2>
+    <label>Username <input id="login_username" value="admin"></label>
+    <label>Password <input id="login_password" type="password"></label>
+    <button class="primary" onclick="loginOPAD()">Login</button>
+    <pre id="login_result"></pre>
+  </section>
+  <section class="card">
+    <h2>Bootstrap admin</h2>
+    <p class="muted">Only works while no users exist. After bootstrap, OPAD enables RBAC.</p>
+    <label>Username <input id="boot_username" value="admin"></label>
+    <label>Password <input id="boot_password" type="password" placeholder="leave empty to generate"></label>
+    <button onclick="bootstrapAdmin()">Bootstrap</button>
+    <pre id="bootstrap_result"></pre>
+  </section>
+</div>
+{% endblock %}

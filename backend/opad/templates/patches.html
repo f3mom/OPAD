@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block content %}
+<h1>Patch Pipeline</h1><div class="card warning">Plans are dry by default. Use checker-like tests before applying through agent.</div><div class="grid two">{% for name, plan in plans.items() %}<div class="card"><h2>{{ name }}</h2><pre>{{ plan | tojson(indent=2) }}</pre><button onclick="snapshotService('{{ name }}')">Create snapshot</button></div>{% endfor %}</div><pre id="patch_result"></pre><div class="card"><h2>Patch history</h2><table><tr><th>Service</th><th>Version</th><th>Status</th><th>Summary</th></tr>{% for p in patches %}<tr><td>{{ p.service_name }}</td><td>{{ p.version }}</td><td>{{ p.status }}</td><td>{{ p.summary }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

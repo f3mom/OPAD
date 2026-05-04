@@ -1,0 +1,30 @@
+image:
+  repository: opad
+  tag: latest
+service:
+  type: ClusterIP
+  port: 1337
+persistence:
+  enabled: true
+  size: 10Gi
+security:
+  allowedCidrs:
+  - 10.10.0.0/16
+traffic:
+  enabled: true
+  providers:
+    packmate:
+      enabled: true
+      url: http://127.0.0.1:65000
+    tulip:
+      enabled: true
+      url: http://127.0.0.1:3000
+    pkappa2:
+      enabled: false
+      url: http://127.0.0.1:8080
+    shovel:
+      enabled: false
+      url: http://127.0.0.1:8081
+    caronte:
+      enabled: false
+      url: http://127.0.0.1:3333

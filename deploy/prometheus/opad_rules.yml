@@ -1,0 +1,31 @@
+groups:
+- name: opad_ad_ctf
+  rules:
+  - alert: OPADServiceHealthFailing
+    expr: opad_service_health_ok == 0
+    for: 15s
+    labels:
+      severity: critical
+    annotations:
+      summary: A service healthcheck is failing
+  - alert: OPADSubmitterQueueHigh
+    expr: opad_submitter_queue_size > 1000
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: Flag submitter queue is backing up
+  - alert: OPADFlagLeakDetected
+    expr: increase(opad_traffic_flag_leaks_total[1m]) > 0
+    for: 0s
+    labels:
+      severity: critical
+    annotations:
+      summary: Traffic provider saw outbound flag leak
+  - alert: OPADDiskRisk
+    expr: opad_disk_used_percent > 85
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: OPAD/capture disk usage is high

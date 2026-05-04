@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPAD</title><link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav class="topbar">
+  <a class="brand" href="/dashboard">OPAD</a>
+  <a href="/setup">Setup</a><a href="/ops">Ops</a><a href="/ultra">Ultra</a><a href="/mega">Mega</a><a href="/dashboard">Dashboard</a>
+  <a href="/flags">Flags</a><a href="/exploits">Exploits</a><a href="/traffic">Traffic</a><a href="/patches">Patches</a>
+  <a href="/integrations">Integrations</a><a href="/filters">Filters</a><a href="/rbac">RBAC</a>
+  <span class="spacer"></span><a class="pill" href="/ultra/lab">Lab</a>
+</nav>
+<main class="container">{% block content %}{% endblock %}</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

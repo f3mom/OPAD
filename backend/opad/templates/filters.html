@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"><div><h1>Defense Filters</h1><p>ctf_proxy / YAMPA / iptables safe apply-flow: draft → stage → checker replay → apply.</p></div></section>
+<div class="grid two">
+<section class="card"><h2>Draft rule</h2>
+<label>Provider <select id="filter_provider"><option>ctf_proxy</option><option>yampa</option><option>iptables</option></select></label>
+<label>Service <input id="filter_service" value="shop"></label>
+<label>Pattern <input id="filter_pattern" value="../"></label>
+<label>Action <select id="filter_action"><option>block</option><option>log</option></select></label>
+<label>Mode <select id="filter_mode"><option>http</option><option>tcp</option><option>ip</option></select></label>
+<button onclick="draftFilterRule()">Draft</button><button onclick="stageFilterRule()">Stage current draft</button>
+<pre id="filter_result"></pre>
+</section>
+<section class="card"><h2>Apply staged rule</h2>
+<p class="muted">OPAD requires explicit safety gates before apply. Dry-run is default.</p>
+<label>Rule ID <input id="apply_rule_id"></label>
+<label><input id="checker_ok" type="checkbox"> checker replay passed</label>
+<label><input id="health_ok" type="checkbox"> healthcheck passed</label>
+<label>Rollback plan <input id="rollback_plan" value="restore staged backup + reload proxy"></label>
+<label>Confirm <input id="apply_confirm" placeholder="APPLY"></label>
+<label><input id="apply_dry" type="checkbox" checked> dry-run</label>
+<button onclick="applyPlan()">Apply plan</button><button onclick="applyRule()">Apply flow</button>
+<pre id="apply_result"></pre>
+</section>
+</div>
+<section class="card"><h2>Rules</h2><table><thead><tr><th>ID</th><th>Rule</th><th>Provider</th><th>Service</th><th>Action</th><th>Status</th><th>Updated</th></tr></thead><tbody>{% for r in rules %}<tr><td>{{r.id}}</td><td>{{r.rule_id}}</td><td>{{r.provider}}</td><td>{{r.service_name}}</td><td>{{r.action}}</td><td>{{r.status}}</td><td>{{r.updated_at}}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

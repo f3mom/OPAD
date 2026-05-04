@@ -1,0 +1,29 @@
+
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>OPAD Ultra Web Cockpit</h1>
+    <p>Все модули OPAD собраны в веб-интерфейсе: setup, targets, services, flags, submitter, exploits, traffic, filters, patching, monitoring, automation, RBAC, backups, plugins, runbooks and lab.</p>
+  </div>
+  <div><button class="primary" onclick="ultraAction('self_test','ultra_result')">Run web self-test</button></div>
+</section>
+<div class="grid four">
+  <div class="card metric"><span>Modules</span><strong>{{ modules|length }}</strong></div>
+  <div class="card metric"><span>Layers</span><strong>{{ layers|length }}</strong></div>
+  <div class="card metric"><span>Mode</span><strong>Dry-run safe</strong></div>
+  <div class="card metric"><span>UI</span><strong>All-web</strong></div>
+</div>
+<section class="card"><h2>Readiness</h2><table><tr><th>Check</th><th>Status</th><th>Detail</th></tr>{% for c in checks %}<tr><td>{{ c.name }}</td><td>{{ 'OK' if c.ok else 'WARN' }}</td><td>{{ c.detail }}</td></tr>{% endfor %}</table></section>
+<section class="card"><h2>Ultra modules</h2>
+{% for layer, mods in layers.items() %}
+  <h3>{{ layer }}</h3>
+  <div class="grid three">
+  {% for m in mods %}
+    <a class="module-card" href="{{ m.web_path }}"><span class="pill">{{ m.status }}</span><h3>{{ m.title }}</h3><p>{{ m.description }}</p><small>{{ m.integrations|join(', ') }}</small></a>
+  {% endfor %}
+  </div>
+{% endfor %}
+</section>
+<section class="card"><h2>One-click actions</h2><button onclick="ultraAction('seed_demo','ultra_result')">Seed demo</button><button onclick="ultraAction('render_all','ultra_result')">Render artifacts</button><button onclick="ultraAction('backup_create','ultra_result')">Create backup</button><button onclick="ultraGet('/api/ultra/ui-map','ultra_result')">UI map</button><pre id="ultra_result"></pre></section>
+{% endblock %}

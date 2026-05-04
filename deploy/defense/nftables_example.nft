@@ -1,0 +1,8 @@
+# OPAD nftables draft. Keep service/checker compatibility; do not apply blindly.
+table inet opad_ctf {
+  chain input_game {
+    type filter hook input priority 0;
+    # Example: rate-limit only a noisy service, not the whole vulnbox.
+    tcp dport 8080 ct state new limit rate over 100/second drop
+  }
+}

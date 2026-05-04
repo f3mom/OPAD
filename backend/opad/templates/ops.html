@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>OPAD Ultra Web Cockpit / Ops Control Center</h1>
+    <p>Everything is reachable from this web interface: setup, flags, submitter, exploits, traffic, filters, patching, checker lab, workers, monitoring, automation, RBAC, plugins and exports.</p>
+  </div>
+  <div><button class="primary" onclick="ultraSelfTest()">Run web self-test</button></div>
+</section>
+
+<div class="grid three">
+  <div class="card metric"><span>Web pages</span><strong>{{ surface.count }}</strong></div>
+  <div class="card metric"><span>Feature groups</span><strong>{{ features|length }}</strong></div>
+  <div class="card metric"><span>Tool groups</span><strong>{{ tools|length }}</strong></div>
+</div>
+
+<div class="grid two">
+  <section class="card">
+    <h2>Self-test</h2>
+    <p class="muted">Runs only local OPAD checks: UI surface, config, regex compile, DB access and module registry.</p>
+    <button onclick="ultraSelfTest()">Run self-test</button>
+    <button onclick="ultraWebSurface()">Show web surface</button>
+    <pre id="ultra_selftest"></pre>
+  </section>
+  <section class="card">
+    <h2>Quick actions</h2>
+    <div class="buttonrow">
+      <button onclick="ultraScopeReport()">Scope report</button>
+      <button onclick="ultraServicesMap()">Service map</button>
+      <button onclick="ultraAttackMap()">Attack map</button>
+      <button onclick="ultraTickSimulate()">Simulate tick</button>
+      <button onclick="ultraExportBundle()">Export web bundle</button>
+    </div>
+    <pre id="ultra_quick"></pre>
+  </section>
+</div>
+
+<section class="card" id="features">
+  <h2>All OPAD web modules</h2>
+  {% for group, items in features.items() %}
+    <h3>{{ group }}</h3>
+    <div class="grid two">
+    {% for f in items %}
+      <div class="subcard">
+        <h4>{{ f.name }}</h4>
+        <p>{{ f.description }}</p>
+        <p><b>Web:</b> <a href="{{ f.web }}">{{ f.web }}</a></p>
+        <p><b>Safety:</b> {{ f.safety }}</p>
+        <code>{{ f.api|join('  ') }}</code>
+      </div>
+    {% endfor %}
+    </div>
+  {% endfor %}
+</section>
+
+<section class="card" id="tools">
+  <h2>Tool cockpit</h2>
+  {% for group, items in tools.items() %}
+    <h3>{{ group }}</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Web module</th><th>OPAD mode</th><th>Checks</th><th>Outputs</th></tr></thead>
+      <tbody>
+      {% for t in items %}
+        <tr><td>{{ t.name }}</td><td>{{ t.web_module }}</td><td>{{ t.opad_mode }}</td><td>{{ t.checks|join(', ') }}</td><td>{{ t.outputs|join(', ') }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+</section>
+
+<div class="grid two">
+  <section class="card" id="traffic">
+    <h2>Traffic / capture / filters</h2>
+    <button onclick="ultraTrafficFusion()">Traffic fusion plan</button>
+    <button onclick="ultraCaptureCommands()">Capture commands</button>
+    <button onclick="ultraFilterLibrary()">Filter library</button>
+    <pre id="ultra_traffic"></pre>
+  </section>
+  <section class="card" id="defense">
+    <h2>Defense / checker / patching</h2>
+    <button onclick="ultraCanaryPlan()">Patch canary plan</button>
+    <button onclick="ultraCheckerPlan()">Stateful checker plan</button>
+    <button onclick="ultraScoreboardAdapters()">Scoreboard adapters</button>
+    <pre id="ultra_defense"></pre>
+  </section>
+</div>
+
+<div class="grid two">
+  <section class="card" id="ops">
+    <h2>Ops / monitoring / automation</h2>
+    <button onclick="ultraObservability()">Observability plan</button>
+    <button onclick="ultraRunbooks()">Runbooks</button>
+    <button onclick="ultraAutomation()">Automation recipes</button>
+    <button onclick="ultraBackup()">Backup plan</button>
+    <pre id="ultra_ops"></pre>
+  </section>
+  <section class="card" id="plugins">
+    <h2>Plugins</h2>
+    <label>Kind <select id="plugin_kind"><option>flag_extractors</option><option>submitters</option><option>target_providers</option><option>healthchecks</option><option>traffic_providers</option><option>defense_filters</option><option>notifications</option><option>scoreboards</option></select></label>
+    <label>Name <input id="plugin_name" value="custom_base31"></label>
+    <button onclick="ultraPluginCatalog()">Plugin catalog</button>
+    <button onclick="ultraPluginScaffold()">Scaffold plugin</button>
+    <pre id="ultra_plugins"></pre>
+  </section>
+</div>
+{% endblock %}

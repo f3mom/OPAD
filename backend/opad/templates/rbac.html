@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"><div><h1>RBAC</h1><p>Users, API tokens, roles and permissions.</p></div><button onclick="authMe()">Who am I?</button></section>
+<div class="grid two">
+<section class="card">
+<h2>Create user</h2>
+<label>Username <input id="new_user" placeholder="alice"></label>
+<label>Password <input id="new_pass" type="password" placeholder="leave empty to generate"></label>
+<label>Role <select id="new_role"><option>viewer</option><option>traffic</option><option>attack</option><option>defense</option><option>admin</option></select></label>
+<button onclick="createUser()">Create user</button>
+<pre id="user_result"></pre>
+</section>
+<section class="card">
+<h2>Create API token</h2>
+<label>Name <input id="token_name" value="ci-runner"></label>
+<label>Role <select id="token_role"><option>viewer</option><option>traffic</option><option>attack</option><option>defense</option><option>admin</option></select></label>
+<button onclick="createToken()">Create token</button>
+<pre id="token_result"></pre>
+</section>
+</div>
+<section class="card"><h2>Users</h2><table><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Active</th><th>Created</th></tr></thead><tbody>{% for u in users %}<tr><td>{{u.id}}</td><td>{{u.username}}</td><td>{{u.role}}</td><td>{{u.active}}</td><td>{{u.created_at}}</td></tr>{% endfor %}</tbody></table></section>
+<section class="card"><h2>Tokens</h2><table><thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Created</th><th>Last used</th></tr></thead><tbody>{% for t in tokens %}<tr><td>{{t.id}}</td><td>{{t.name}}</td><td>{{t.role}}</td><td>{{t.created_at}}</td><td>{{t.last_used_at}}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

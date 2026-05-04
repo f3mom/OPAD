@@ -1,0 +1,48 @@
+game:
+  name: OPAD Mega Example
+  mode: attack-defense
+  team_id: 7
+  tick_duration_seconds: 120
+  timezone: Europe/Vienna
+scope:
+  allowed_cidrs: [10.10.0.0/16]
+  require_target_in_scope: true
+  exclude_own_team: true
+targets:
+  provider: pattern
+  pattern: 10.10.{team_id}.1
+  from: 1
+  to: 40
+  exclude: [7]
+services:
+  shop:
+    protocol: http
+    port: 8080
+    healthcheck: {type: http, path: /health, expected_status: 200}
+  notes:
+    protocol: tcp
+    port: 31337
+    healthcheck: {type: command, command: "python checks/notes_checker_like.py {host} {port}"}
+flags:
+  extractors:
+    - name: base31_eq
+      type: regex
+      regex: "(?<![A-Z0-9=])[A-Z0-9]{31}=(?![A-Z0-9=])"
+  ttl: {mode: ticks, value: 5}
+  deduplicate: {enabled: true, by: value_hash}
+  fake_flag_protection: {enabled: true}
+submitter:
+  type: http_json
+  url: http://10.10.0.1:31337/submit
+  method: POST
+  body: {flag: "{flag}"}
+  queue: {rate_limit_per_second: 5, batch_size: 20, retry: true}
+traffic:
+  providers:
+    packmate: {enabled: true, url: "http://127.0.0.1:65000"}
+    tulip: {enabled: true, url: "http://127.0.0.1:3000"}
+    pkappa2: {enabled: false, url: "http://127.0.0.1:8080"}
+    shovel: {enabled: false, url: "http://127.0.0.1:8081"}
+    caronte: {enabled: false, url: "http://127.0.0.1:3333"}
+workers:
+  count: 4

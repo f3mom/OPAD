@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div><h1>{{ module.title }}</h1><p>{{ module.description }}</p></div>
+  <a class="button" href="/ultra">Back to Ultra</a>
+</section>
+<div class="grid two">
+  <section class="card"><h2>Integrations</h2><ul>{% for i in module.integrations %}<li>{{ i }}</li>{% endfor %}</ul></section>
+  <section class="card"><h2>Safety gates</h2><ul>{% for s in module.safety %}<li>{{ s }}</li>{% endfor %}</ul></section>
+</div>
+<section class="card"><h2>Web actions</h2><div class="button-row">{% for a in module.actions %}<button onclick="ultraRunAction({{ a|tojson }}, 'module_result')">{{ a.title }}</button>{% endfor %}<button onclick="ultraGet('/api/ultra/modules/{{ module.key }}','module_result')">Module JSON</button></div><pre id="module_result"></pre></section>
+<section class="card"><h2>APIs</h2><ul>{% for api in module.apis %}<li><code>{{ api }}</code></li>{% endfor %}</ul></section>
+<section class="card"><h2>Artifacts</h2><ul>{% for f in module.artifacts %}<li><code>{{ f }}</code></li>{% endfor %}</ul></section>
+{% endblock %}

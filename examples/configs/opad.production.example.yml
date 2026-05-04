@@ -1,0 +1,165 @@
+game:
+  name: "Production A/D CTF"
+  mode: attack-defense
+  team_id: 7
+  tick_duration_seconds: 120
+  timezone: "Europe/Chisinau"
+
+scope:
+  allowed_cidrs:
+    - "10.10.0.0/16"
+  require_target_in_scope: true
+  exclude_own_team: true
+
+network:
+  own_vulnbox_ip: "10.10.7.1"
+  game_interface: "game0"
+  management_interface: "eth0"
+
+targets:
+  provider: pattern
+  pattern: "10.10.{team_id}.1"
+  from: 1
+  to: 40
+  exclude: [7]
+
+services:
+  shop:
+    protocol: http
+    port: 8080
+    healthcheck:
+      type: http
+      path: "/health"
+      expected_status: 200
+    local:
+      compose_file: "/opt/services/docker-compose.yml"
+      compose_service: "shop"
+      source_path: "/opt/services/shop"
+    traffic_options:
+      urldecode: true
+      chunked: true
+      merge: true
+
+flags:
+  extractors:
+    - name: base31_eq
+      type: regex
+      regex: "(?<![A-Z0-9=])[A-Z0-9]{31}=(?![A-Z0-9=])"
+  normalize:
+    trim: true
+    uppercase: false
+  deduplicate:
+    enabled: true
+    by: value_hash
+  ttl:
+    mode: ticks
+    value: 5
+  fake_flag_protection:
+    enabled: true
+
+submitter:
+  type: http_json
+  url: "http://10.10.0.1:31337/submit"
+  method: POST
+  headers:
+    Authorization: "Bearer ${SUBMIT_TOKEN}"
+  body:
+    flag: "{flag}"
+  queue:
+    rate_limit_per_second: 5
+    batch_size: 20
+    retry: true
+  verdicts:
+    ok: ["OK", "ACCEPTED", "CORRECT"]
+    duplicate: ["DUP", "DUPLICATE"]
+    old: ["OLD", "EXPIRED"]
+    invalid: ["INVALID", "BAD"]
+    own: ["OWN", "SELF"]
+
+users:
+  enabled: true
+  roles: [admin, defense, attack, traffic, viewer]
+
+agent:
+  mode: ssh
+  host: "10.10.7.1"
+  user: "ctf"
+  port: 22
+  workdir: "/opt/opad-agent"
+
+patching:
+  default_mode: docker_compose
+  snapshot_before_deploy: true
+  rollback_on_failed_healthcheck: true
+
+exploit_runner:
+  directory: "./exploits"
+  default_runtime: python
+  parallelism: 30
+  timeout_seconds: 5
+  auto_extract_flags: true
+  auto_submit: true
+  schedule:
+    default: every_tick
+
+capture:
+  provider: pcap_broker
+  interface: "game0"
+  listen: "0.0.0.0:4242"
+  exclude_ports: [22, 1337, 65000, 3000, 8080]
+  retention_hours: 4
+
+traffic:
+  providers:
+    packmate:
+      enabled: true
+      mode: external
+      url: "http://127.0.0.1:65000"
+      token: "env:PACKMATE_TOKEN"
+      sync_services: true
+      sync_flag_patterns: true
+      api_paths:
+        services: "/api/services"
+        patterns: "/api/patterns"
+        streams: "/api/streams"
+        lookback: "/api/lookback"
+    tulip:
+      enabled: true
+      url: "http://127.0.0.1:8000"
+    pkappa2:
+      enabled: true
+      url: "http://127.0.0.1:8080"
+    shovel:
+      enabled: true
+      url: "http://127.0.0.1:8081"
+    native:
+      enabled: true
+
+defense_filters:
+  providers:
+    ctf_proxy:
+      enabled: true
+      root: "./integrations/ctf_proxy"
+    yampa:
+      enabled: true
+      root: "./integrations/yampa"
+    iptables:
+      enabled: true
+      require_checker_replay_before_apply: true
+
+monitoring:
+  health_interval_seconds: 10
+  docker_logs: true
+  service_logs: true
+  traffic_findings: true
+  disk_alert_percent: 85
+
+automation:
+  on_tick_started:
+    - run_scheduled_exploits
+    - run_healthchecks
+  on_traffic_flag_leak_detected:
+    - create_finding
+    - notify_defense
+  on_patch_failed:
+    - rollback

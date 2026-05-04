@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"><div><h1>Integrations</h1><p>Packmate, Tulip, Pkappa2, Shovel/Suricata, and pcap-broker control surface.</p></div><button class="primary" onclick="integrationStatus()">Check all</button></section>
+<div class="grid two">
+<section class="card"><h2>Status</h2><pre id="integration_status"></pre></section>
+<section class="card"><h2>pcap-broker plan</h2><button onclick="capturePlan()">Generate capture plan</button><pre id="capture_result"></pre></section>
+</div>
+<div class="grid two">
+<section class="card"><h2>Packmate</h2><button onclick="packmateSyncServices()">Sync services dry-run</button><button onclick="packmateSyncPatterns()">Sync patterns dry-run</button><label>Lookback pattern <input id="lookback_pattern" value="../"></label><label>Minutes <input id="lookback_minutes" type="number" value="5"></label><button onclick="packmateLookback()">Lookback dry-run</button><pre id="packmate_ext_result"></pre></section>
+<section class="card"><h2>Tulip</h2><label>Query <input id="tulip_query" value="service:shop"></label><button onclick="tulipFlows()">Query flows plan</button><button onclick="tulipDraft()">Create exploit draft from sample flow</button><pre id="tulip_result"></pre></section>
+</div>
+<div class="grid two">
+<section class="card"><h2>Pkappa2</h2><label>Filename <input id="pkappa_file" value="capture.pcap"></label><button onclick="pkappaUploadPlan()">Upload plan</button><label>Query <input id="pkappa_query" value="service=shop"></label><button onclick="pkappaQuery()">Query plan</button><pre id="pkappa_result"></pre></section>
+<section class="card"><h2>Shovel / Suricata</h2><label>Rule name <input id="shovel_name" value="TRAVERSAL_BASIC"></label><label>Pattern <input id="shovel_pattern" value="../"></label><label>Port <input id="shovel_port" type="number" value="8080"></label><button onclick="shovelRule()">Draft Suricata rule</button><button onclick="shovelAlerts()">Alerts plan</button><pre id="shovel_result"></pre></section>
+</div>
+{% endblock %}
